@@ -1,0 +1,104 @@
+##Système de détection d'anomalies
+
+Ce système de détection d'anomalies se compose de quatre composants principaux: 
+un script pour la collecte de données de statistiques du système (collect_data.py), 
+un script pour surveiller l'activité cryptographique suspecte (iron_dome.py), 
+un script pour l'entraînement du modèle (train_model.py) et 
+un script pour les prédictions en temps réel (predict.py).
+
+
+
+Iron Dome est un programme de surveillance des systèmes qui utilise un modèle de machine learning pour détecter les activités suspectes. 
+Il surveille les modifications de fichiers, les activités de cryptographie et l'utilisation du système, et enregistre les résultats dans un journal. 
+Si une activité suspecte est détectée, Iron Dome enregistre l'anomalie dans le journal et termine le processus responsable.
+
+
+##Fonctionnement
+
+Iron Dome utilise plusieurs techniques pour surveiller l'activité du système :
+
+    Il surveille les modifications de fichiers dans les répertoires spécifiés. Si un fichier est modifié, cela est enregistré dans le journal.
+
+    Il surveille les activités de cryptographie en surveillant les processus connus pour leur utilisation des fonctions cryptographiques. 
+    Si un de ces processus utilise plus de 50% du CPU, cela est enregistré dans le journal.
+
+    Il utilise un modèle de machine learning pour faire des prédictions basées sur l'utilisation du système. Si le modèle détecte une anomalie, 
+    Iron Dome enregistre l'anomalie dans le journal et termine le processus responsable.
+
+    Il vérifie l'entropie des fichiers pour détecter si un fichier semble être crypté. 
+    Si l'entropie d'un fichier change de manière significative, cela est enregistré dans le journal.
+
+
+
+##Collecte de données
+
+Le script collect_data.py recueille les statistiques du système en temps réel, 
+notamment le pourcentage d'utilisation du CPU, le nombre de lectures sur le disque et 
+le nombre d'écritures sur le disque. Ces statistiques sont collectées toutes les secondes 
+pendant une durée spécifiée, puis enregistrées dans un fichier CSV.
+
+Pour lancer le script, utilisez la commande suivante :
+
+python3 collect_data.py
+
+##Surveillance de l'activité cryptographique suspecte
+
+Le script iron_dome.py surveille le système pour détecter toute activité cryptographique suspecte. 
+Il suit les processus connus pour leur utilisation de fonctions cryptographiques et enregistre tout changement suspect d'entropie de fichier. 
+En outre, il surveille également les dossiers spécifiés pour tout changement de fichier.
+
+Pour lancer le script, utilisez la commande suivante :
+
+css
+
+python3 iron_dome.py [path1] [path2] ...
+
+Remarque: ce script doit être exécuté en tant que super-utilisateur.
+
+
+##Entraînement du modèle
+
+Le script train_model.py charge les données du fichier CSV généré par collect_data.py, 
+prétraite les données, entraîne un modèle SVM à une classe sur les données et sauvegarde le modèle.
+
+Pour lancer le script, utilisez la commande suivante :
+
+python3 train_model.py
+
+##Prédictions en temps réel
+
+Le script predict.py charge le modèle entraîné à partir de train_model.py, 
+collecte les statistiques du système en temps réel, prétraite ces données et utilise le modèle pour faire une prédiction. 
+Les prédictions sont imprimées à la console.
+
+Pour lancer le script, utilisez la commande suivante :
+
+python3 predict.py
+
+##Automatisation
+
+Un Makefile est fourni pour automatiser l'exécution des quatre scripts.
+
+Pour démarrer tous les scripts en même temps, utilisez la commande suivante :
+
+Makefile
+
+Le Makefile fourni avec Iron Dome permet d'automatiser plusieurs tâches nécessaires à l'exécution du programme :
+
+    make setup crée un environnement Python, l'active, installe les dépendances nécessaires à partir de requirements.txt, crée le fichier journal, et lance Iron Dome.
+    make run_all lance tous les scripts (Iron Dome, train_model, collect_stats) en même temps.
+    make run_iron_dome lance seulement Iron Dome.
+    make run_train_model lance seulement le script train_model.py.
+    make run_collect_stats lance seulement le script collect_stats.py.
+
+Exécution
+
+Iron Dome doit être exécuté avec les privilèges de root. 
+Pour lancer le programme, utilisez la commande sudo make run_iron_dome. 
+Pour lancer tous les scripts en même temps, utilisez la commande sudo make run_all.
+
+Journal
+
+Les résultats de la surveillance sont enregistrés dans /var/log/irondome/irondome.log. 
+Ce fichier contient des informations sur les fichiers modifiés, les activités de cryptographie, 
+les anomalies détectées par le modèle de machine learning, et les changements d'entropie des fichiers.
